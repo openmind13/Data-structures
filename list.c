@@ -20,7 +20,7 @@ typedef struct List {
 
 extern  list_t   *new_list();
 extern int print_list(list_t *list);
-extern int append_item(list_t *list, int value);
+extern int add_item(list_t *list, int value);
 extern int pop_item(list_t *list, int index);
 extern int pop_last_item(list_t *list);
 extern int get_item(list_t *list, int index);
@@ -111,7 +111,7 @@ extern int print_list(list_t *list) {
 
 // push_item returns current count of items in list
 // if < 0 - error
-extern int append_item(list_t *list, int value) {
+extern int add_item(list_t *list, int value) {
     if(list == NULL) {
         printf("list is null !!!\n");
         return -1; // bad data
@@ -169,7 +169,59 @@ extern int pop_item(list_t *list, int index) {
         return -1;
     }
 
+    if(((index + 1) > list->node_count) || (index < 0)) {
+        int max_index = list->node_count - 1;
+        printf("Get out of range. List length = %d. Index range => [0 - %d]\n", list->node_count, max_index);
+        return -1;
+    }
+
+    // choose an optimal algorithm for item searching
+    node_t *required_node = NULL;
+    if(index <= (list->node_count / 2)) {
+        required_node = _search_from_the_begining(list, index);
+        if(required_node == NULL)
+            return -1;
+    } else {
+        required_node = _search_from_the_end(list, index);
+        if(required_node == NULL)
+            return -1;
+    }
     
+    int return_value = required_node->value;
+
+    // if only one item
+    if((required_node->prev_node == NULL) && (required_node->next_node == NULL)) {
+        list->first_node = NULL;
+        list->last_node = NULL;
+    }
+
+    // if first item
+    if((required_node->prev_node == NULL) && (required_node->next_node != NULL)) {
+        node_t *next = required_node->next_node;
+        next->prev_node = NULL;
+        list->first_node = next;
+    }
+
+    // if last item
+    if((required_node->prev_node != NULL) && (required_node->next_node == NULL)) {
+        node_t *prev = required_node->prev_node;
+        prev->next_node = NULL;
+        list->last_node = prev;
+    }
+
+    // if in middle
+    if((required_node->prev_node != NULL) && (required_node->next_node != NULL)) {
+        node_t *prev = required_node->prev_node;
+        node_t *next = required_node->next_node;
+        prev->next_node = next;
+        next->prev_node = prev;
+    }
+
+    free(required_node);
+    required_node = NULL;
+    list->node_count--;
+
+    return return_value;
 }
 
 
@@ -183,10 +235,16 @@ extern int pop_last_item(list_t *list) {
 
     int value = list->last_node->value;
     
+    node_t *current_node = list->last_node;
 
-    node_t *current_node = list->first_node;
-    node_t *next_node = list->first_node->next_node;
-    
+    list->last_node = current_node->prev_node;
+    list->last_node->next_node = NULL;
+    list->node_count--;
+
+    free(current_node);
+    current_node = NULL;    
+
+    return value;
 }
 
 
@@ -204,29 +262,56 @@ extern int get_item(list_t *list, int index) {
         return -1;
     }
 
-    if(index > list->node_count) {
-        printf("Get out of range. List length = %d\n", list->node_count);
+    if(((index + 1) > list->node_count) || (index < 0)) {
+        int max_index = list->node_count - 1;
+        printf("Get out of range. List length = %d. Index range => [0 - %d]\n", list->node_count, max_index);
         return -1;
     }
 
+    // choose an optimal algorithm for item searching
     node_t *required_node = NULL;
-    if(index <= list->node_count) {
+    if(index <= (list->node_count / 2)) {
         required_node = _search_from_the_begining(list, index);
+        if(required_node == NULL) {
+            return -1;
+        }
         return required_node->value;
     } else {
         required_node = _search_from_the_end(list, index);
+        if(required_node == NULL) {
+            return -1;
+        }
         return required_node->value;
     }
 }
 
 
-static node_t *_search_from_the_begining(list_t *list, int index) {
-    
-    return NULL;
+// return pointer to node with searchable index
+static node_t *_search_from_the_begining(list_t *list, int search_index) {
+    int index = 0;
+    node_t *current_node = list->first_node;
+    while((search_index != index) && (search_index <= (list->node_count / 2))) {
+        current_node = current_node->next_node;
+        index++;
+    }
+    return current_node;
 }
 
 
-static node_t *_search_from_the_end(list_t *list, int index) {
-
-    return NULL;
+// return pointer to node with searchable index
+static node_t *_search_from_the_end(list_t *list, int search_index) {
+    int index = list->node_count - 1;
+    node_t *current_node = list->last_node;
+    while((search_index != index) && (search_index <= (list->node_count / 2))) {
+        current_node = current_node->prev_node;
+        index--;
+    }
+    return current_node;
 }
+
+
+// extern int insert_item(list_t *list, int index, int item) {
+
+
+//     return -1;
+// }

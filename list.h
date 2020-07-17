@@ -1,5 +1,5 @@
-#ifndef LIST_H_
-#define LIST_H_
+#ifndef LIST_H
+#define LIST_H
 
 
 typedef struct Node node_t;
@@ -8,7 +8,7 @@ typedef struct List list_t;
 extern list_t   *new_list();
 extern int      clear_list(list_t *list);
 extern int      print_list(list_t *list);
-extern int      append_item(list_t *list, int value);
+extern int      add_item(list_t *list, int value);
 extern int      pop_item(list_t *list, int index);
 extern int      pop_last_item(list_t *list);
 extern int      get_item(list_t *list, int index);
