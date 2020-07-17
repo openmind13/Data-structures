@@ -16,3 +16,7 @@ int pop_item(list_t *list, int index) - remove item from list by index
 int pop_last_item(list_t *list) - remove last item
 
 int get_item(list_t *list, int index) - return item value
+
+## Future
+insert_item()
+sort()
