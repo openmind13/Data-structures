@@ -1,6 +1,7 @@
 # Data structures
 - Linked list
 
+
 ## Linked list
 ### current
 list_t *new_list() - create a new list
