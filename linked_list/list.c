@@ -18,12 +18,13 @@ typedef struct List {
 } list_t;
 
 
-extern  list_t   *new_list();
-extern int print_list(list_t *list);
-extern int add_item(list_t *list, int value);
-extern int pop_item(list_t *list, int index);
-extern int pop_last_item(list_t *list);
-extern int get_item(list_t *list, int index);
+extern  list_t  *new_list();
+extern int      print_list(list_t *list);
+extern int      add_item(list_t *list, int value);
+extern int      pop_item(list_t *list, int index);
+extern int      pop_last_item(list_t *list);
+extern int      get_item(list_t *list, int index);
+extern int      insert_item(list_t *list, int index, int value);
 
 static node_t *_search_from_the_begining(list_t *list, int index);
 static node_t *_search_from_the_end(list_t *list, int index);
@@ -139,7 +140,7 @@ extern int add_item(list_t *list, int value) {
     // if not first item in list
     node_t *new_node = (node_t *) malloc(sizeof(node_t));
     if(new_node == NULL) {
-        printf("failed to allocate memory for %d node\n", list->node_count++);
+        printf("failed to allocate memory for %d node\n", list->node_count);
         return -1;
     }
 
@@ -164,12 +165,7 @@ extern int pop_item(list_t *list, int index) {
         return -1; // bad data
     }
 
-    if(index > list->node_count) {
-        printf("Get out of range. List length = %d\n", list->node_count);
-        return -1;
-    }
-
-    if(((index + 1) > list->node_count) || (index < 0)) {
+    if((index >= list->node_count) || (index < 0)) {
         int max_index = list->node_count - 1;
         printf("Get out of range. List length = %d. Index range => [0 - %d]\n", list->node_count, max_index);
         return -1;
@@ -177,15 +173,13 @@ extern int pop_item(list_t *list, int index) {
 
     // choose an optimal algorithm for item searching
     node_t *required_node = NULL;
-    if(index <= (list->node_count / 2)) {
+    if(index <= (list->node_count / 2))
         required_node = _search_from_the_begining(list, index);
-        if(required_node == NULL)
-            return -1;
-    } else {
+    else
         required_node = _search_from_the_end(list, index);
-        if(required_node == NULL)
-            return -1;
-    }
+
+    if(required_node == NULL)
+        return -1;
     
     int return_value = required_node->value;
 
@@ -262,7 +256,7 @@ extern int get_item(list_t *list, int index) {
         return -1;
     }
 
-    if(((index + 1) > list->node_count) || (index < 0)) {
+    if((index >= list->node_count) || (index < 0)) {
         int max_index = list->node_count - 1;
         printf("Get out of range. List length = %d. Index range => [0 - %d]\n", list->node_count, max_index);
         return -1;
@@ -270,19 +264,98 @@ extern int get_item(list_t *list, int index) {
 
     // choose an optimal algorithm for item searching
     node_t *required_node = NULL;
-    if(index <= (list->node_count / 2)) {
+    if(index <= (list->node_count / 2))
         required_node = _search_from_the_begining(list, index);
-        if(required_node == NULL) {
-            return -1;
-        }
-        return required_node->value;
-    } else {
+    else
         required_node = _search_from_the_end(list, index);
-        if(required_node == NULL) {
-            return -1;
-        }
-        return required_node->value;
+        
+    if(required_node == NULL) {
+        return -1;
     }
+    return required_node->value;
+}
+
+
+extern int insert_item(list_t *list, int index, int value) {
+    if(list == NULL) {
+        printf("list is null !!!\n");
+        return -1; // bad data
+    }
+
+    if((index >= list->node_count) || (index < 0)) {
+        int max_index = list->node_count - 1;
+        printf("Get out of range. List length = %d. Index range => [0 - %d]\n", list->node_count, max_index);
+        return -1; // bad data
+    }
+
+    // choose an optimal algorithm for item searching
+    node_t *current_node = NULL;
+    if(index <= (list->node_count / 2))
+        current_node = _search_from_the_begining(list, index);
+    else
+        current_node = _search_from_the_end(list, index);
+
+    if(current_node == NULL)
+        return -1;
+
+    // if current node is only one item
+    if((current_node->prev_node == NULL) && (current_node->next_node == NULL)) {
+        node_t *new_node = (node_t *) malloc(sizeof(node_t));
+        if(new_node == NULL) {
+            printf("failed to allocate memory for new node\n");
+            return -1; // bad data
+        }
+        current_node->prev_node = new_node;
+
+        new_node->next_node = current_node;
+        new_node->prev_node = NULL;
+        new_node->value = value;
+
+        list->first_node = new_node;
+        list->last_node = current_node;
+        list->node_count++;
+
+        return new_node->value;
+    }
+
+    // if current node is first item
+    if((current_node->prev_node == NULL) && (current_node->next_node != NULL)) {
+        node_t *new_node = (node_t *) malloc(sizeof(node_t));
+        if(new_node == NULL) {
+            printf("failed to allocate memory for new node\n");
+            return -1; // bad data
+        }
+        current_node->prev_node = new_node;
+        new_node->next_node = current_node;
+        new_node->value = value;
+
+        list->first_node = new_node;
+        list->node_count++;
+
+        return new_node->value;
+    }
+
+    // if current node in the middle or it last
+    if(current_node->prev_node != NULL) {
+        node_t *new_node = (node_t *) malloc(sizeof(new_node));
+        if(new_node == NULL) {
+            printf("failed to allocate memory for new node\n");
+            return -1; // bad data
+        }
+        node_t *prev = current_node->prev_node;
+        prev->next_node = new_node;
+        current_node->prev_node = new_node;
+
+        new_node->prev_node = prev;
+        new_node->next_node = current_node;
+        new_node->value = value;
+
+        list->node_count++;
+        return new_node->value;
+    }
+
+    printf("error in insert item\n");
+    return -1; // bad data
 }
 
 
@@ -302,16 +375,9 @@ static node_t *_search_from_the_begining(list_t *list, int search_index) {
 static node_t *_search_from_the_end(list_t *list, int search_index) {
     int index = list->node_count - 1;
     node_t *current_node = list->last_node;
-    while((search_index != index) && (search_index <= (list->node_count / 2))) {
+    while((search_index != index) && (search_index > (list->node_count / 2))) {
         current_node = current_node->prev_node;
         index--;
     }
     return current_node;
 }
-
-
-// extern int insert_item(list_t *list, int index, int item) {
-
-
-//     return -1;
-// }
