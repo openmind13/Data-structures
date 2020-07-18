@@ -19,4 +19,3 @@ int pop_last_item(list_t *list) - remove last item
 int get_item(list_t *list, int index) - return item value
 
 int insert_item(list_t *list, int index, int value) - insert item in the middle or front of the list
-
