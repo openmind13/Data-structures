@@ -12,7 +12,7 @@ typedef struct Node {
 
 
 typedef struct List {
-    int node_count;
+    unsigned int node_count;
     node_t *first_node;
     node_t *last_node;
 } list_t;
