@@ -4,8 +4,20 @@
 #include "linked_list/list.h"
 
 
+void linked_list_test();
+
+
 int main() {
-    printf("list program\n");
+    
+    linked_list_test();
+    
+    
+    return 0;
+}
+
+
+void linked_list_test() {
+    printf("testing linked list\n");
     printf("-------------------------------------------------\n\n");
 
     list_t *mylist = new_list();
@@ -20,15 +32,8 @@ int main() {
 
     print_list(mylist);
 
-    //printf("insert item return = %d\n", insert_item(mylist, 4, 20));
     insert_item(mylist, 2, 20);
-    //printf("get item = %d\n", get_item(mylist, 4));
     print_list(mylist);
 
-    // add_item(mylist, 500);
-    // print_list(mylist);
-
     clear_list(mylist);
-    
-    return 0;
 }
