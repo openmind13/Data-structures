@@ -18,7 +18,8 @@ typedef struct List {
 } list_t;
 
 
-extern  list_t  *new_list();
+extern list_t   *new_list();
+extern int      clear_list(list_t *list);
 extern int      print_list(list_t *list);
 extern int      add_item(list_t *list, int value);
 extern int      pop_item(list_t *list, int index);

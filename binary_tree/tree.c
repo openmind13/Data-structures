@@ -11,10 +11,15 @@ typedef struct Node {
 } node_t;
 
 typedef struct Tree {
-    int depth;
     struct Node *root_node;
 } tree_t;
 
+
+extern tree_t *new_tree();
+extern int add_node(tree_t *tree, int value);
+
+static node_t *find_node(node_t *node, int value);
+static int clear_recurse(node_t *node);
 
 extern void tree_prefix_print(tree_t *tree);
 extern void tree_infix_print(tree_t *tree);
@@ -24,12 +29,6 @@ static void prefix_print(node_t *node);
 static void infix_print(node_t *node);
 static void postfix_print(node_t *node);
 
-extern tree_t *new_tree();
-extern int add_node(tree_t *tree, int value);
-
-static int add_last(node_t *node, int value);
-static node_t *find_node(node_t *node, int value);
-
 
 extern tree_t *new_tree() {
     tree_t *tree = (tree_t *) malloc(sizeof(tree_t));
@@ -37,7 +36,6 @@ extern tree_t *new_tree() {
         printf("failed to allocate memory for new tree\n");
         return NULL;
     }
-    tree->depth = 0;
     tree->root_node = NULL;
     return tree;
 }
@@ -64,44 +62,77 @@ extern int add_node(tree_t *tree, int value) {
         return 0;
     } else {
         // if not first
-        add_last(tree->root_node, value);
+        find_node(tree->root_node, value);
     }
-
     return 0;
 }
 
 
-static int add_last(node_t *node, int value) {
-    if(node->left_node == NULL && node->right_node == NULL) {
+static node_t *find_node(node_t *node, int value) {
+    if(value < node->value && node->left_node != NULL) {
+        node = find_node(node->left_node, value);
+    }
+    else if(value > node->value && node->right_node != NULL) {
+        node = find_node(node->right_node, value);
+    }
+    else if(value < node->value && node->left_node == NULL) {
         node_t *new_node = (node_t *) malloc(sizeof(node_t));
         if(new_node == NULL) {
             printf("failed to allocate memory for node_t\n");
-            return -1;
+            return NULL;
         }
         new_node->value = value;
         new_node->left_node = NULL;
         new_node->right_node = NULL;
-
-        if(value < node->value) {
-            node->left_node = new_node;
-        } else if(value > node->value) {
-            node->right_node = new_node;
-        } else {
-            printf("already in tree\n");
-            return -1;
-        }
-        return 0;
-
-    } else {
-        if(value < node->value) {
-            add_last(node->left_node, value);
-        } else if(value > node->value) {
-            add_last(node->right_node, value);
-        } else {
-            printf("already in tree\n");
-            return -1;
-        }
+        node->left_node = new_node;
     }
+    else if(value > node->value && node->right_node == NULL) {
+        node_t *new_node = (node_t *) malloc(sizeof(node_t));
+        if(new_node == NULL) {
+            printf("failed to allocate memory for node_t\n");
+            return NULL;
+        }
+        new_node->value = value;
+        new_node->left_node = NULL;
+        new_node->right_node = NULL;
+        node->right_node = new_node;  
+    }
+    else {
+        printf("already in tree\n");
+        return NULL;
+    }
+    return node;
+}
+
+// < 0 - error
+extern int clear_tree(tree_t *tree) {
+    if(tree == NULL) {
+        printf("tree is NULL\n");
+        return -1;
+    }
+
+    if(tree->root_node == NULL) {
+        printf("tree is empty\n");
+        return -1;
+    }
+
+    node_t *node = tree->root_node;
+    clear_recurse(tree->root_node);
+    // tree->root_node = NULL;
+    return 0;
+}
+
+
+static int clear_recurse(node_t *node) {
+    if(node->left_node != NULL)
+        clear_recurse(node->left_node);
+    
+    if(node->right_node != NULL)
+        clear_recurse(node->right_node);
+    
+    free(node);
+    node = NULL;
+    return 0;
 }
 
 

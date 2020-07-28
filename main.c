@@ -3,6 +3,9 @@
 
 #include "linked_list/list.h"
 #include "binary_tree/tree.h"
+#include "vector/vector.h"
+#include "stack/stack.h"
+#include "queue/queue.h"
 
 
 void test_linked_list();
@@ -43,14 +46,24 @@ void test_linked_list() {
 
 void test_binary_tree() {
     printf("\n\ntesting binary tree\n");
-    printf("-------------------------------------------------\n\n");
+    printf("------------------------------------------------\n\n");
 
     tree_t *tree = new_tree();
 
-    add_node(tree, 5);
+    add_node(tree, 50);
+    add_node(tree, 100);
     add_node(tree, 10);
-    add_node(tree, 15);
-    add_node(tree, 3);
 
     tree_prefix_print(tree);
+
+    clear_tree(tree);
+    printf("---------------\n\n");
+
+    tree_prefix_print(tree);
+
+    printf("-------------\n\n");
+    add_node(tree, 1000);
+    tree_prefix_print(tree);
+
+    clear_tree(tree);
 }
