@@ -10,12 +10,17 @@
 
 void test_linked_list();
 void test_binary_tree();
+void test_stack();
+void test_vector();
+void test_queue();
 
 
 int main() {
     
     // test_linked_list();
-    test_binary_tree();
+    // test_binary_tree();
+
+    test_stack();
     
     return 0;
 }
@@ -66,4 +71,30 @@ void test_binary_tree() {
     tree_prefix_print(tree);
 
     clear_tree(tree);
+}
+
+
+void test_stack() {
+    printf("\n\ntesting stack\n");
+    printf("------------------------------\n\n");
+
+    stack_t *stack = new_stack(10);
+    push(stack, 1);
+    push(stack, 2);
+    push(stack, 3);
+    push(stack, 500);
+
+    print_stack(stack);
+
+    clear_stack(stack);
+}
+
+
+void test_vector() {
+
+}
+
+
+void test_queue() {
+
 }
