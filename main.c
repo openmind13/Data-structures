@@ -18,9 +18,9 @@ void test_queue();
 int main() {
     
     // test_linked_list();
-    // test_binary_tree();
+    test_binary_tree();
 
-    test_stack();
+    //test_stack();
     
     return 0;
 }

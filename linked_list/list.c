@@ -237,7 +237,7 @@ extern int pop_last_item(list_t *list) {
     list->node_count--;
 
     free(current_node);
-    current_node = NULL;    
+    current_node = NULL;
 
     return value;
 }

@@ -18,12 +18,14 @@ typedef struct Tree {
 extern tree_t *new_tree();
 extern int add_node(tree_t *tree, int value);
 
-static node_t *find_node(node_t *node, int value);
-static int clear_recurse(node_t *node);
-
+extern void tree_print(tree_t *tree);
 extern void tree_prefix_print(tree_t *tree);
 extern void tree_infix_print(tree_t *tree);
 extern void tree_postfix_print(tree_t *tree);
+
+
+static node_t *find_node(node_t *node, int value);
+static int clear_recurse(node_t *node);
 
 static void prefix_print(node_t *node);
 static void infix_print(node_t *node);
@@ -124,15 +126,27 @@ extern int clear_tree(tree_t *tree) {
 
 
 static int clear_recurse(node_t *node) {
-    if(node->left_node != NULL)
-        clear_recurse(node->left_node);
-    
-    if(node->right_node != NULL)
-        clear_recurse(node->right_node);
-    
-    free(node);
-    node = NULL;
+    if(node != NULL) {
+        if(node->left_node != NULL)
+            clear_recurse(node->left_node);
+            
+        if(node->right_node != NULL)
+            clear_recurse(node->right_node);
+        
+        free(node);
+        node = NULL;
+        return 0;
+    }
     return 0;
+}
+
+
+extern void tree_print(tree_t *tree) {
+    if(tree == NULL) {
+        printf("tree is NULL\n");
+        return;
+    }
+    infix_print(tree->root_node);
 }
 
 
